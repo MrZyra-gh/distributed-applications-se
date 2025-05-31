@@ -1,0 +1,158 @@
+﻿@using StudyBuddyMVC.DTOs;
+@using StudyBuddyMVC.Extensions;
+@{
+    UserDto loggedUser = this.ViewContext.HttpContext.Session.GetObject<UserDto>("loggedUser");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .welcome-message {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .main-content {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            color: #1f2937;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 160px;
+        }
+
+            .dashboard-button:hover {
+                background: #4338ca;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+            }
+
+            .dashboard-button.assignments {
+                background: #dc2626;
+            }
+
+                .dashboard-button.assignments:hover {
+                    background: #b91c1c;
+                    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+                }
+
+        
+
+        .welcome-message {
+            position: static;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .button-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dashboard-button {
+            width: 100%;
+            max-width: 250px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="welcome-message" id="welcomeMessage">
+            Welcome, @(loggedUser == null ? "Annonymous" : loggedUser.UserName)
+        </div>
+
+        <div class="main-content">
+            <h1 class="dashboard-title">Dashboard</h1>
+
+            <div class="button-container">
+                <button class="dashboard-button courses" onclick="navigateToCourses()">
+                    My Courses
+                </button>
+                <button class="dashboard-button assignments" onclick="navigateToAssignments()">
+                    My Assignments
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+
+        // Navigation functions
+        function navigateToCourses() {
+            window.location.href = '/courses/index';
+        }
+
+        function navigateToAssignments() {
+            window.location.href = '/assignments/index';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWelcomeMessage();
+        });
+    </script>
+</body>
+</html>

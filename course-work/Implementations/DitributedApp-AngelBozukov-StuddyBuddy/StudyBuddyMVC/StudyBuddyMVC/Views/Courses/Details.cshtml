@@ -1,0 +1,59 @@
+﻿@model StudyBuddyMVC.ViewModels.CourseDetailsViewModel
+
+@{
+    ViewBag.Title = "Course Details";
+    bool canEdit = ViewBag.CanEdit ?? false;
+}
+
+<h2>@Model.Course.Title</h2>
+
+<p><strong>Description:</strong> @Model.Course.Description</p>
+<p><strong>Instructor ID:</strong> @Model.Course.InstructorId</p>
+<p><strong>Start Date:</strong> @Model.Course.StartDate.ToShortDateString()</p>
+<p><strong>End Date:</strong> @(Model.Course.EndDate?.ToShortDateString() ?? "N/A")</p>
+
+@if (canEdit)
+{
+    <div class="mb-3">
+        <a asp-action="Edit" asp-route-id="@Model.Course.Id" class="btn btn-warning">Edit</a>
+        <a asp-action="EnrollStudent" asp-controller="Courses" asp-route-courseId="@Model.Course.Id" class="btn btn-primary">Enroll Student</a>
+        <a asp-action="Create" asp-controller="Assignments" asp-route-courseId="@Model.Course.Id" class="btn btn-success">Add Assignment</a>        
+        <a asp-action="Members" asp-controller="Courses" asp-route-courseId="@Model.Course.Id" class="btn btn-info">View Members</a>
+    </div>
+}
+
+<hr />
+<h3>Assignments </h3>
+
+@if (Model.Assignments == null || !Model.Assignments.Any())
+{
+    <p>No assignments for this course.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due Date</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var assignment in Model.Assignments)
+            {
+                <tr>
+                    <td>@assignment.Title</td>
+                    <td>@assignment.DueDate.ToShortDateString()</td>
+                    <td>@assignment.Instructions</td>
+                    <td>
+                        <a asp-action="Details" asp-controller="Assignments" asp-route-id="@assignment.Id" class="btn btn-info btn-sm">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Back to Courses</a>

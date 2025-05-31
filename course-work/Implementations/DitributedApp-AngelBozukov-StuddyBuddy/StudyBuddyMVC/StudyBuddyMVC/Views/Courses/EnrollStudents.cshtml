@@ -1,0 +1,448 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enroll Students</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .search-section {
+            margin-bottom: 25px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .student-selector {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .dropdown-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #studentSelect {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        #studentSelect:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+        }
+
+        .add-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .selected-students {
+            margin-top: 30px;
+        }
+
+        .selected-students h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .student-list {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            margin: 5px;
+            border-radius: 4px;
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-info {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .enroll-section {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .enroll-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .enroll-btn:hover {
+            background: #0056b3;
+        }
+
+        .enroll-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Enroll Students in Course</h2>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-error">@TempData["ErrorMessage"]</div>
+        }
+
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search students by name or email..." />
+            </div>
+
+            <div class="student-selector">
+                <div class="dropdown-container">
+                    <select id="studentSelect">
+                        <option value="">Select a student to add...</option>
+                        @foreach (var student in Model.AvailableStudents)
+                        {
+                            <option value="@student.Id" data-name="@student.Name" data-email="@student.Email">
+                                @student.Name (@student.Email)
+                            </option>
+                        }
+                    </select>
+                </div>
+                <button type="button" class="add-btn" id="addStudentBtn" disabled>+ Add</button>
+            </div>
+        </div>
+
+        <div class="selected-students">
+            <h3>Selected Students for Enrollment (<span id="selectedCount">0</span>)</h3>
+            <div class="student-list" id="selectedStudentsList">
+                <div class="empty-message" id="emptyMessage">
+                    No students selected. Use the dropdown above to add students.
+                </div>
+            </div>
+        </div>
+
+        <form method="post" action="/Course/EnrollStudents" id="enrollForm">
+            <input type="hidden" name="courseId" value="@Model.CourseId" />
+
+
+            <div id="hiddenInputs"></div>
+
+            <div class="enroll-section">
+                <button type="submit" class="enroll-btn" id="enrollBtn" disabled>
+                    Enroll Selected Students
+                </button>
+            </div>
+        </form>
+
+        <a href="/Course/Details/@Model.CourseId" class="back-link">← Back to Course Details</a>
+    </div>
+
+    <script>
+        // Store selected students
+        let selectedStudents = [];
+
+        // DOM elements
+        const searchInput = document.getElementById('searchInput');
+        const studentSelect = document.getElementById('studentSelect');
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const selectedStudentsList = document.getElementById('selectedStudentsList');
+        const selectedCount = document.getElementById('selectedCount');
+        const enrollBtn = document.getElementById('enrollBtn');
+        const emptyMessage = document.getElementById('emptyMessage');
+        const hiddenInputs = document.getElementById('hiddenInputs');
+
+        // Store all options for filtering
+        const allOptions = Array.from(studentSelect.options).slice(1); // Exclude the first placeholder option
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            // Clear current options (except placeholder)
+            studentSelect.innerHTML = '<option value="">Select a student to add...</option>';
+
+            // Filter and add matching options
+            const filteredOptions = allOptions.filter(option => {
+                const text = option.textContent.toLowerCase();
+                return text.includes(searchTerm);
+            });
+
+            filteredOptions.forEach(option => {
+                studentSelect.appendChild(option.cloneNode(true));
+            });
+
+            // Reset selection
+            studentSelect.value = '';
+            addStudentBtn.disabled = true;
+        });
+
+        // Enable/disable add button based on selection
+        studentSelect.addEventListener('change', function() {
+            addStudentBtn.disabled = !this.value;
+        });
+
+        // Add student to selected list
+        addStudentBtn.addEventListener('click', function() {
+            const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+            if (!selectedOption.value) return;
+
+            const studentId = selectedOption.value;
+            const studentName = selectedOption.dataset.name;
+            const studentEmail = selectedOption.dataset.email;
+
+            // Check if already selected
+            if (selectedStudents.find(s => s.id === studentId)) {
+                alert('Student already selected!');
+                return;
+            }
+
+            // Add to selected students
+            const student = {
+                id: studentId,
+                name: studentName,
+                email: studentEmail
+            };
+            selectedStudents.push(student);
+
+            // Remove from dropdown
+            selectedOption.remove();
+
+            // Update UI
+            updateSelectedStudentsList();
+            updateEnrollButton();
+
+            // Reset selection
+            studentSelect.value = '';
+            addStudentBtn.disabled = true;
+        });
+
+        // Remove student from selected list
+        function removeStudent(studentId) {
+            // Find and remove from array
+            const studentIndex = selectedStudents.findIndex(s => s.id === studentId);
+            if (studentIndex === -1) return;
+
+            const student = selectedStudents[studentIndex];
+            selectedStudents.splice(studentIndex, 1);
+
+            // Add back to dropdown
+            const option = document.createElement('option');
+            option.value = student.id;
+            option.dataset.name = student.name;
+            option.dataset.email = student.email;
+            option.textContent = `${student.name} (${student.email})`;
+
+            // Insert in alphabetical order
+            const options = Array.from(studentSelect.options).slice(1);
+            let inserted = false;
+            for (let i = 0; i < options.length; i++) {
+                if (student.name.localeCompare(options[i].dataset.name) < 0) {
+                    studentSelect.insertBefore(option, options[i]);
+                    inserted = true;
+                    break;
+                }
+            }
+            if (!inserted) {
+                studentSelect.appendChild(option);
+            }
+
+            // Update UI
+            updateSelectedStudentsList();
+            updateEnrollButton();
+        }
+
+        // Update the selected students list display
+        function updateSelectedStudentsList() {
+            selectedCount.textContent = selectedStudents.length;
+
+            if (selectedStudents.length === 0) {
+                selectedStudentsList.innerHTML = '<div class="empty-message">No students selected. Use the dropdown above to add students.</div>';
+            } else {
+                let html = '';
+                selectedStudents.forEach(student => {
+                    html += `
+                        <div class="student-item">
+                            <div class="student-info">
+                                <strong>${student.name}</strong><br>
+                                <small>${student.email}</small>
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeStudent('${student.id}')">Remove</button>
+                        </div>
+                    `;
+                });
+                selectedStudentsList.innerHTML = html;
+            }
+
+            // Update hidden form inputs
+            updateHiddenInputs();
+        }
+
+        // Update hidden form inputs for submission
+        function updateHiddenInputs() {
+            hiddenInputs.innerHTML = '';
+            selectedStudents.forEach(student => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selectedStudentIds';
+                input.value = student.id;
+                hiddenInputs.appendChild(input);
+            });
+        }
+
+        // Update enroll button state
+        function updateEnrollButton() {
+            enrollBtn.disabled = selectedStudents.length === 0;
+        }
+
+        // Form submission validation
+        document.getElementById('enrollForm').addEventListener('submit', function(e) {
+            if (selectedStudents.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one student to enroll.');
+            }
+        });
+
+        // Initialize
+        updateEnrollButton();
+    </script>
+</body>
+</html>

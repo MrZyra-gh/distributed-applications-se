@@ -1,0 +1,64 @@
+﻿@model List<StudyBuddyMVC.DTOs.CourseDto>
+@{
+    ViewData["Title"] = ViewBag.PageTitle ?? "Courses";
+    var canCreate = ViewBag.CanCreateCourse as bool? ?? false;
+    var userRole = ViewBag.UserRole as string ?? "";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info">@TempData["InfoMessage"]</div>
+}
+
+@if (canCreate)
+{
+    <a asp-controller="Courses" asp-action="Create" class="btn btn-primary mb-3">Create New Course</a>
+}
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Capacity</th>
+                <th>Instructor</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in Model)
+            {
+                <tr>
+                    <td>@course.Title</td>
+                    <td>@course.Description</td>
+                    <td>@course.StartDate.ToShortDateString()</td>
+                    <td>@(course.EndDate?.ToShortDateString() ?? "N/A")</td>
+                    <td>@course.Capacity</td>
+                    <td>@course.InstructorName</td>
+                    <td>
+                        <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="btn btn-sm btn-info">Details</a>
+                        @if (canCreate)
+                        {
+                            <a asp-controller="Courses" asp-action="Edit" asp-route-id="@course.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-controller="Courses" asp-action="Delete" asp-route-id="@course.Id" class="btn btn-sm btn-danger">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No courses found.</p>
+}

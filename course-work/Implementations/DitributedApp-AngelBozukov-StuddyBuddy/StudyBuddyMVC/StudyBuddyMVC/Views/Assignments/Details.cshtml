@@ -1,0 +1,23 @@
+﻿@model StudyBuddyMVC.DTOs.AssignmentDto
+
+@{
+    ViewBag.Title = "Assignment Details";
+    bool canEdit = ViewBag.CanEdit ?? false;
+}
+
+<h2>@Model.Title</h2>
+
+<p><strong>Course:</strong> @Model.CourseTitle</p>
+<p><strong>Instructions:</strong> @Model.Instructions</p>
+<p><strong>Due Date:</strong> @Model.DueDate.ToString("D")</p>
+<p><strong>Maximum Score:</strong> @Model.MaxScore</p>
+
+@if (canEdit)
+{
+    <div class="mb-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+    </div>
+}
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary">Back to Course</a>

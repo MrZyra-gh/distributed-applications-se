@@ -1,0 +1,60 @@
+﻿@model List<StudyBuddyMVC.DTOs.AssignmentDto>
+@{
+    ViewBag.Title = ViewBag.PageTitle ?? "Assignments";
+}
+
+<h2>@ViewBag.PageTitle</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info">@TempData["InfoMessage"]</div>
+}
+
+@if ((bool)(ViewBag.CanCreateAssignments ?? false))
+{
+    <a href="@Url.Action("Create", "Assignments")" class="btn btn-primary mb-3">Create New Assignment</a>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning">No assignments found.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due Date</th>
+                <th>Course ID</th>
+                <th>Description</th>
+                @if ((string)(ViewBag.UserRole ?? "") == "professor" || (string)(ViewBag.UserRole ?? "") == "instructor")
+                {
+                    <th>Actions</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var assignment in Model)
+            {
+                <tr>
+                    <td>@assignment.Title</td>
+                    <td>@assignment.DueDate.ToShortDateString()</td>
+                    <td>@assignment.CourseId</td>
+                    <td>@assignment.Instructions</td>
+                    @if ((string)(ViewBag.UserRole ?? "") == "professor" || (string)(ViewBag.UserRole ?? "") == "instructor")
+                    {
+                        <td>
+                            <a class="btn btn-sm btn-warning" href="@Url.Action("Edit", "Assignments", new { id = assignment.Id })">Edit</a>
+                            <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", "Assignments", new { id = assignment.Id })">Delete</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
